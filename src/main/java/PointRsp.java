@@ -11,6 +11,6 @@ public class PointRsp {
 
     @Override
     public String toString() {
-        return lat+":"+lon+":"+rsp;
+        return lat+","+lon+"\r";
     }
 }

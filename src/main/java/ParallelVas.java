@@ -17,8 +17,8 @@ public class ParallelVas {
     public static void ParallelVas() {
         long s = System.nanoTime();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
-        for (int i = 1; i < 75; i++) {
-            String statement = "select VALUE coordinate from twitter.ds_tweet t where t.geo_tag.stateID=" + i + " and t.create_at>datetime(\"2017-08-08T00:00:00.000\") and t.create_at<datetime(\"2017-08-09T00:00:00.000\");";
+        for (int i = 1; i < 2; i++) {
+            String statement = "select VALUE coordinate from twitter.ds_tweet t where t.create_at>datetime(\"2017-08-08T00:00:00.000\") and t.create_at<datetime(\"2017-08-09T00:00:00.000\");";
             Runnable query = new Query(statement, 0.1);
             executorService.execute(query);
         }

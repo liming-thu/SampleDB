@@ -5,9 +5,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -15,6 +13,9 @@ import java.util.stream.Collectors;
 import jdk.nashorn.internal.parser.JSONParser;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 public class Query implements Runnable {
     private String statement;
@@ -34,11 +35,19 @@ public class Query implements Runnable {
         Float[][] pointList = getCoordinates();
         long e1=System.nanoTime();
         if (pointList!=null&&pointList.length > 0) {
+            List<PointRsp> ret=new ArrayList<>();
             long s=System.nanoTime();
-            vas.getSample(pointList, (int) (pointList.length * sampleRatio));
+            ret=vas.getSample(pointList, (int) (pointList.length * sampleRatio));
             long e=System.nanoTime();
             System.out.println("get data:"+(e1-s1)/1000000.0+" vas:"+(e-s)/1000000.0);
-//            System.out.println(statement.substring(statement.indexOf("stateID="), statement.indexOf("and t.create_at")));
+            Path path=Paths.get("full.vas");
+            try {
+                for(PointRsp point:ret) {
+                    Files.write(path, point.toString().getBytes(), APPEND);
+                }
+            }catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
         }
     }
     //read data from file;
@@ -60,7 +69,6 @@ public class Query implements Runnable {
             }
             VAS vas=new VAS();
             vas.getSample(pointList, (int) (pointList.length * sampleRatio));
-            System.out.println(pointList.length);
         }catch (Exception ex){
 
         }
