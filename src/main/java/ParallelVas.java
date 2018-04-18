@@ -3,15 +3,20 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ParallelVas {
     public static void main(String[] args) {
-        ParallelVas();
+//        ParallelVas();
 //        WS();
 //        ParallelVasFromFile();// should exchange the function names of Query.run and Query.run2
+        Compare();
     }
 
     public static void ParallelVas() {
@@ -67,5 +72,23 @@ public class ParallelVas {
 
         }
 
+    }
+    public static void Compare(){
+        Path pathFullVas= Paths.get("full.vas");
+        Path pathSliceVas=Paths.get("slices.vas");
+        //
+        try {
+            List<String> fullList = Files.readAllLines(pathFullVas);
+            List<String> sliceList = Files.readAllLines(pathSliceVas);
+            //
+            int in=0;
+            for(String str : sliceList){
+                if(fullList.contains(str))
+                    in++;
+            }
+            System.out.println("percent:"+(in+0.0)/sliceList.size());
+        }catch (Exception ex){
+            System.out.println(ex.getMessage());
+        }
     }
 }
