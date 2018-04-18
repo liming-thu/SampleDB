@@ -1,14 +1,18 @@
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
+import jdk.nashorn.internal.parser.JSONParser;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 
@@ -24,13 +28,41 @@ public class Query implements Runnable {
         //
     }
 
-    @Override
     public void run() {
         VAS vas = new VAS();
+        long s1=System.nanoTime();
         Float[][] pointList = getCoordinates();
+        long e1=System.nanoTime();
         if (pointList!=null&&pointList.length > 0) {
+            long s=System.nanoTime();
             vas.getSample(pointList, (int) (pointList.length * sampleRatio));
-            System.out.println(statement.substring(statement.indexOf("stateID="), statement.indexOf("and t.create_at")));
+            long e=System.nanoTime();
+            System.out.println("get data:"+(e1-s1)/1000000.0+" vas:"+(e-s)/1000000.0);
+//            System.out.println(statement.substring(statement.indexOf("stateID="), statement.indexOf("and t.create_at")));
+        }
+    }
+    //read data from file;
+    public void run2(){
+        try {
+            Path path= Paths.get("/root/TestDB/state/"+statement);
+            List<String> ln=Files.readAllLines(path);
+            //
+            String[] strs=ln.get(0).replace("None","").replace("[","").replace("]","").split("\\,");
+            Float[][] pointList=new Float[strs.length/2][2];
+            //
+            for(int i=0,j=0;i<strs.length;i++){
+                if(i%2==0) {
+                    pointList[j][0]=Float.parseFloat(strs[i]);
+                }else{
+                    pointList[j][1]=Float.parseFloat(strs[i]);
+                    j++;
+                }
+            }
+            VAS vas=new VAS();
+            vas.getSample(pointList, (int) (pointList.length * sampleRatio));
+            System.out.println(pointList.length);
+        }catch (Exception ex){
+
         }
     }
     public Float[][] wsGetCoordinates(){
