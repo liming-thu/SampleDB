@@ -50,7 +50,7 @@ public class Query implements Runnable {
     }
     public Float[][] getCoordinates() {
         try {
-            String strUrl = "http://localhost:19002/query/service";
+            String strUrl = "http://ipubmed2.ics.uci.edu:19002/query/service";
             URL url = new URL(strUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
