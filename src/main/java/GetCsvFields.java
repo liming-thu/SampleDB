@@ -21,8 +21,7 @@ public class GetCsvFields {
                 (new InputStreamReader(conn.getInputStream()));
         String line;
         while ((line = result.readLine()) != null) {
-            Files.write(Paths.get("text.dat"),(line+"\n").getBytes(), StandardOpenOption.CREATE,StandardOpenOption.APPEND);
-//            System.out.println(line);
+            Files.write(Paths.get("id_text_coordinate.dat"),(line+"\n").getBytes(), StandardOpenOption.CREATE,StandardOpenOption.APPEND);
         }
         result.close();
     }
